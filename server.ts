@@ -57,6 +57,31 @@ function isJiraConfigured() {
   return Boolean(config.baseUrl && config.email && config.apiToken);
 }
 
+// Helper: parse single or multi-valued Jira Client field
+function parseClientValue(cRaw: any): string {
+  if (!cRaw) return '';
+  if (typeof cRaw === 'string') return cRaw.trim();
+  if (typeof cRaw === 'object' && !Array.isArray(cRaw)) {
+    if (cRaw.value) return String(cRaw.value).trim();
+    if (cRaw.name) return String(cRaw.name).trim();
+    return '';
+  }
+  if (Array.isArray(cRaw)) {
+    const names = cRaw
+      .map((item) => {
+        if (typeof item === 'string') return item.trim();
+        if (typeof item === 'object' && item !== null) {
+          return String(item.value || item.name || '').trim();
+        }
+        return '';
+      })
+      .filter(Boolean);
+    const uniqueNames = Array.from(new Set(names));
+    return uniqueNames.join(', ');
+  }
+  return '';
+}
+
 // In-Memory Issues & Projects Cache
 // When Jira is configured, start clean without fictitious mock data
 let cachedIssues: any[] = isJiraConfigured() ? [] : generateMockIssues(new Date());
@@ -307,15 +332,7 @@ async function performUnscheduledEpicsSync(): Promise<{ issues: any[]; warning?:
       const f = item.fields || {};
       const p = f.project || {};
 
-      let clientVal = '';
-      if (clientField && f[clientField]) {
-        const cRaw = f[clientField];
-        if (typeof cRaw === 'string') clientVal = cRaw;
-        else if (typeof cRaw === 'object' && cRaw.value) clientVal = cRaw.value;
-        else if (Array.isArray(cRaw) && cRaw.length > 0) {
-          clientVal = typeof cRaw[0] === 'string' ? cRaw[0] : cRaw[0].value || '';
-        }
-      }
+      const clientVal = clientField && f[clientField] ? parseClientValue(f[clientField]) : '';
 
       const assignee = f.assignee;
       const createdAtRaw = f.created ? String(f.created).split('T')[0] : '';
@@ -965,15 +982,7 @@ app.post('/api/jira/sync', async (req, res) => {
         }
 
         // Extract Client
-        let clientVal = '';
-        if (clientField && f[clientField]) {
-          const cRaw = f[clientField];
-          if (typeof cRaw === 'string') clientVal = cRaw;
-          else if (typeof cRaw === 'object' && cRaw.value) clientVal = cRaw.value;
-          else if (Array.isArray(cRaw) && cRaw.length > 0) {
-            clientVal = typeof cRaw[0] === 'string' ? cRaw[0] : cRaw[0].value || '';
-          }
-        }
+        const clientVal = clientField && f[clientField] ? parseClientValue(f[clientField]) : '';
 
         const assignee = f.assignee;
         const dueDateVal = f[dueDateField] || f.duedate || '';

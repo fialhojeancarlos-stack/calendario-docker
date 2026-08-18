@@ -128,7 +128,12 @@ export function useJiraIssues(rangeStart: string, rangeEnd: string, filters: Fil
 
   const matchClient = (issue: JiraIssue, selectedClients: string[]): boolean => {
     if (!selectedClients || selectedClients.length === 0) return true;
-    return Boolean(issue.client && selectedClients.includes(issue.client));
+    if (!issue.client) return false;
+    const issueClients = issue.client
+      .split(/[,/;|]/)
+      .map((c) => c.trim())
+      .filter(Boolean);
+    return issueClients.some((ic) => selectedClients.includes(ic));
   };
 
   const matchSprint = (issue: JiraIssue, selectedSprints: string[]): boolean => {
@@ -165,7 +170,13 @@ export function useJiraIssues(rangeStart: string, rangeEnd: string, filters: Fil
     const clientsSet = new Set<string>();
     rawIssues.forEach((issue) => {
       if (matchProject(issue, filters.projects) && matchSprint(issue, filters.sprints) && matchSearch(issue, filters.searchQuery)) {
-        if (issue.client) clientsSet.add(issue.client);
+        if (issue.client) {
+          issue.client
+            .split(/[,/;|]/)
+            .map((c) => c.trim())
+            .filter(Boolean)
+            .forEach((c) => clientsSet.add(c));
+        }
       }
     });
     filters.clients.forEach((c) => clientsSet.add(c));

@@ -1,4 +1,10 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import WebSocket from 'ws';
+
+// Polyfill global WebSocket for Node.js environments < 22 where @supabase/supabase-js realtime expects globalThis.WebSocket
+if (typeof globalThis.WebSocket === 'undefined') {
+  (globalThis as any).WebSocket = WebSocket;
+}
 
 // Helper to detect if a value is a placeholder string
 function isPlaceholder(value: string): boolean {

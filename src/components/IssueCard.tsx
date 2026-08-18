@@ -89,23 +89,23 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue, compact = true, the
       id={`issue-card-${issue.issue_key}`}
       onClick={onClick}
       className={`group relative rounded-md transition-all cursor-pointer select-none shadow-xs shrink-0 ${style.cardBorderBg} ${
-        compact ? 'px-2 py-1 space-y-0.5' : 'p-3 space-y-2'
+        compact ? 'px-1.5 py-0.5 space-y-0.5' : 'p-3 space-y-2'
       }`}
       title={`${issue.issue_key}${hasSummary ? `: ${issue.summary}` : ''} (${issue.status})`}
     >
       {/* Top Row: Issue Key & Status Tag */}
-      <div className="flex items-center justify-between gap-1">
-        <span className={`font-mono text-[11px] font-bold tracking-tight ${style.keyText}`}>
+      <div className="flex items-center justify-between gap-1 leading-none">
+        <span className={`font-mono text-[10px] font-bold tracking-tight ${style.keyText}`}>
           {issue.issue_key}
         </span>
-        <span className={`text-[9px] px-1.5 py-0.5 rounded tracking-wide uppercase shrink-0 truncate max-w-[110px] ${style.badge}`}>
+        <span className={`text-[8.5px] px-1 py-0.5 rounded tracking-wide uppercase shrink-0 truncate max-w-[100px] ${style.badge}`}>
           {issue.status}
         </span>
       </div>
 
       {/* Summary Row */}
       {hasSummary && (
-        <div className={`truncate text-[10px] leading-tight font-medium ${style.summaryText}`}>
+        <div className={`truncate text-[9.5px] leading-tight font-medium ${style.summaryText}`}>
           {issue.summary}
         </div>
       )}

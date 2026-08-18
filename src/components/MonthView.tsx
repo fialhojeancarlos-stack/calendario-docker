@@ -32,16 +32,16 @@ const MonthDayCell: React.FC<MonthDayCellProps> = ({ day, onSelectDay, theme = '
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const height = entry.contentRect.height;
-        // Header ~ 24px + top/bottom padding ~ 10px
-        const headerAndPadding = 34;
-        const overflowBtnHeight = 22;
-        const cardHeight = 38; // exact compact card height + gap
-
         const totalIssues = day.issues.length;
         if (totalIssues === 0) {
           setMaxVisibleCount(0);
           continue;
         }
+
+        // Header ~ 22px + top/bottom padding ~ 6px
+        const headerAndPadding = 28;
+        const overflowBtnHeight = 18;
+        const cardHeight = 30; // compact card height
 
         const available = height - headerAndPadding;
         
@@ -52,12 +52,10 @@ const MonthDayCell: React.FC<MonthDayCellProps> = ({ day, onSelectDay, theme = '
         if (totalIssues > count) {
           const availableWithBtn = available - overflowBtnHeight;
           count = Math.floor(availableWithBtn / cardHeight);
-          if (count < 1) {
-            count = 0;
-          }
         }
 
-        setMaxVisibleCount(count);
+        // Always show at least 1 card when there are issues
+        setMaxVisibleCount(Math.max(1, count));
       }
     });
 

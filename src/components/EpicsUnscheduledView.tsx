@@ -47,6 +47,7 @@ export const EpicsUnscheduledView: React.FC<EpicsUnscheduledViewProps> = ({
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedProject, setSelectedProject] = useState<string>('all');
+  const [selectedClient, setSelectedClient] = useState<string>('all');
   const [selectedType, setSelectedType] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
 
@@ -152,6 +153,39 @@ export const EpicsUnscheduledView: React.FC<EpicsUnscheduledViewProps> = ({
     return Array.from(set).sort((a, b) => a.localeCompare(b, 'pt-BR'));
   }, [issues, selectedProject, selectedStatus, searchQuery, selectedType]);
 
+  const clientOptions = useMemo(() => {
+    const set = new Set<string>();
+    issues.forEach((issue) => {
+      const projName = (issue.project_name || '').trim();
+      const projKey = (issue.project_key || '').trim();
+      const matchP = selectedProject === 'all' || projName === selectedProject || projKey === selectedProject;
+      const matchT = selectedType === 'all' || issue.issue_type === selectedType;
+      const matchS = selectedStatus === 'all' || issue.status === selectedStatus;
+      let matchQ = true;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase().trim();
+        matchQ = (
+          issue.issue_key.toLowerCase().includes(q) ||
+          issue.summary.toLowerCase().includes(q) ||
+          (issue.assignee_name || '').toLowerCase().includes(q) ||
+          (issue.project_name || issue.project_key || '').toLowerCase().includes(q) ||
+          (issue.client || '').toLowerCase().includes(q)
+        );
+      }
+      if (matchP && matchT && matchS && matchQ) {
+        if (issue.client) {
+          issue.client
+            .split(/[,/;|]/)
+            .map((c) => c.trim())
+            .filter(Boolean)
+            .forEach((c) => set.add(c));
+        }
+      }
+    });
+    if (selectedClient !== 'all') set.add(selectedClient);
+    return Array.from(set).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  }, [issues, selectedProject, selectedType, selectedStatus, searchQuery, selectedClient]);
+
   const statusOptions = useMemo(() => {
     const set = new Set<string>();
     issues.forEach((issue) => {
@@ -204,6 +238,16 @@ export const EpicsUnscheduledView: React.FC<EpicsUnscheduledViewProps> = ({
       ) {
         return false;
       }
+    }
+
+    // Client Filter
+    if (selectedClient !== 'all') {
+      if (!issue.client) return false;
+      const issueClients = issue.client
+        .split(/[,/;|]/)
+        .map((c) => c.trim())
+        .filter(Boolean);
+      if (!issueClients.includes(selectedClient)) return false;
     }
 
     // Type Filter
@@ -430,6 +474,22 @@ export const EpicsUnscheduledView: React.FC<EpicsUnscheduledViewProps> = ({
             {projectOptions.map((p) => (
               <option key={p} value={p}>
                 {p}
+              </option>
+            ))}
+          </select>
+
+          {/* Client Filter */}
+          <select
+            value={selectedClient}
+            onChange={(e) => setSelectedClient(e.target.value)}
+            className={`px-2.5 py-1.5 rounded-lg border text-xs font-medium outline-none transition-all ${
+              isLight ? 'bg-slate-50 border-slate-200 text-slate-700' : 'bg-[#161b22] border-[#30363d] text-slate-200'
+            }`}
+          >
+            <option value="all">Todos os Clientes ({clientOptions.length})</option>
+            {clientOptions.map((c) => (
+              <option key={c} value={c}>
+                {c}
               </option>
             ))}
           </select>
