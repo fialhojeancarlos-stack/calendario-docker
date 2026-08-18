@@ -99,6 +99,21 @@ Acesse no navegador: `http://localhost:3000`
 
 ---
 
+### 6. Executar via Docker Compose (produção)
+
+Este repositório é iniciado via **Docker Compose**, não via Nixpacks.
+
+1. Crie o arquivo `.env` na raiz (baseado no `.env.example`) com as variáveis do Jira e do Supabase.
+2. Suba o serviço:
+
+```bash
+docker compose up -d --build
+```
+
+O serviço `calendario` expõe a porta `3000` e lê as variáveis de ambiente do arquivo `.env` (via `env_file`). Para configurar no EasyPanel, escolha o modo de build **Docker Compose** apontando para o `docker-compose.yml` deste repositório em vez de Nixpacks.
+
+---
+
 ## 🛠️ Funcionalidades e Critérios Atendidos
 
 - **Visão Inicial**: Abre diretamente na visão de **Mês** no mês corrente.
