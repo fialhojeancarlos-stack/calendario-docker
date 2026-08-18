@@ -101,16 +101,27 @@ Acesse no navegador: `http://localhost:3000`
 
 ### 6. Executar via Docker Compose (produção)
 
-Este repositório é iniciado via **Docker Compose**, não via Nixpacks.
+Este repositório é iniciado via **Docker Compose**, não via Nixpacks. A imagem é construída automaticamente pelo GitHub Actions ([.github/workflows/docker-publish.yml](.github/workflows/docker-publish.yml)) a cada push em `main` e publicada no **GHCR** (`ghcr.io/fialhojeancarlos-stack/calendario-docker`). O `docker-compose.yml` usa `image:` em vez de `build:`, então painéis como o Docker Manager da Hostinger só precisam puxar a imagem pronta.
 
-1. Crie o arquivo `.env` na raiz (baseado no `.env.example`) com as variáveis do Jira e do Supabase.
-2. Suba o serviço:
+**Variáveis de ambiente:** todas as variáveis usadas pelo `docker-compose.yml` (Jira + Supabase, veja `.env.example`) devem ser configuradas no painel do Docker Manager (ou em um arquivo `.env` ao lado do `docker-compose.yml`, se a plataforma suportar `env_file`/interpolação de `.env`).
+
+> `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` **não** precisam existir no momento do build da imagem: o servidor expõe um endpoint `/env.js` que lê essas variáveis do processo em tempo de execução e injeta no front-end a cada request — ou seja, dá para trocar essas duas variáveis sem gerar uma imagem nova, só reiniciando o container.
+
+Rodar localmente (build local, para desenvolvimento/teste):
 
 ```bash
-docker compose up -d --build
+docker compose build
+docker compose up -d
 ```
 
-O serviço `calendario` expõe a porta `3000` e lê as variáveis de ambiente do arquivo `.env` (via `env_file`). Para configurar no EasyPanel, escolha o modo de build **Docker Compose** apontando para o `docker-compose.yml` deste repositório em vez de Nixpacks.
+Rodar a partir da imagem publicada (produção / Hostinger):
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+> A primeira vez que o workflow do GitHub Actions rodar, o pacote `calendario-docker` fica **privado** no GHCR por padrão. Vá em `github.com/fialhojeancarlos-stack?tab=packages` → `calendario-docker` → **Package settings** → **Change visibility** → **Public**, para que o Docker Manager consiga puxar a imagem sem autenticação no registry.
 
 ---
 
