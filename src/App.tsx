@@ -86,6 +86,13 @@ function CalendarAppContent() {
     });
   };
 
+  // Mantém a classe .dark no <html> em sincronia com o tema escolhido no app,
+  // para que as classes "dark:" do Tailwind sigam o toggle do app e não o
+  // prefers-color-scheme do sistema operacional.
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  }, [theme]);
+
   const isLight = theme === 'light';
 
   // Sync viewMode from filters into useCalendarRange or vice versa

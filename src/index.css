@@ -1,1 +1,5 @@
 @import "tailwindcss";
+
+/* Liga o variant "dark:" do Tailwind à classe .dark no <html>, controlada pelo
+   toggle de tema do app, em vez de seguir o prefers-color-scheme do sistema. */
+@custom-variant dark (&:where(.dark, .dark *));
