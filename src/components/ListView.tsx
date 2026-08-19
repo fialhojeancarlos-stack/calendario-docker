@@ -153,7 +153,7 @@ export const ListView: React.FC<ListViewProps> = ({
                   className="w-28 md:w-32 px-2.5 py-2.5 cursor-pointer hover:text-blue-600 select-none whitespace-nowrap"
                   title="Ordenar por Data Prevista"
                 >
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center justify-center gap-1">
                     <Calendar className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                     <span>Data Prevista</span>
                     <ArrowUpDown className="h-3 w-3 opacity-60 shrink-0" />
@@ -164,7 +164,7 @@ export const ListView: React.FC<ListViewProps> = ({
                   className="w-28 px-2.5 py-2.5 cursor-pointer hover:text-blue-600 select-none whitespace-nowrap"
                   title="Ordenar por Chave"
                 >
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center justify-center gap-1">
                     <span>Chave</span>
                     <ArrowUpDown className="h-3 w-3 opacity-60 shrink-0" />
                   </div>
@@ -174,7 +174,7 @@ export const ListView: React.FC<ListViewProps> = ({
                   className="w-28 md:w-32 px-2.5 py-2.5 cursor-pointer hover:text-blue-600 select-none whitespace-nowrap"
                   title="Ordenar por Tipo"
                 >
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center justify-center gap-1">
                     <span>Tipo</span>
                     <ArrowUpDown className="h-3 w-3 opacity-60 shrink-0" />
                   </div>
@@ -185,15 +185,15 @@ export const ListView: React.FC<ListViewProps> = ({
                   className="w-36 md:w-40 px-2.5 py-2.5 cursor-pointer hover:text-blue-600 select-none whitespace-nowrap"
                   title="Ordenar por Projeto / Cliente"
                 >
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center justify-center gap-1">
                     <Folder className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                     <span>Projeto / Cliente</span>
                     <ArrowUpDown className="h-3 w-3 opacity-60 shrink-0" />
                   </div>
                 </th>
-                <th className="w-28 md:w-32 px-2.5 py-2.5 whitespace-nowrap">Status</th>
-                <th className="w-24 md:w-28 px-2.5 py-2.5 whitespace-nowrap">Sprint</th>
-                <th className="w-20 md:w-24 px-2.5 py-2.5 text-right whitespace-nowrap">Ação</th>
+                <th className="w-36 md:w-44 px-2.5 py-2.5 text-center">Status</th>
+                <th className="w-32 md:w-40 px-2.5 py-2.5 text-center">Sprint</th>
+                <th className="w-20 md:w-24 px-2.5 py-2.5 text-center whitespace-nowrap">Ação</th>
               </tr>
             </thead>
             <tbody className={`divide-y ${isLight ? 'divide-slate-200 bg-white' : 'divide-[#1e293b] bg-[#0d1117]'}`}>
@@ -257,16 +257,16 @@ export const ListView: React.FC<ListViewProps> = ({
                         )}
                       </td>
 
-                      <td className="px-2.5 py-2.5 whitespace-nowrap">
-                        <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${style.badge}`}>
+                      <td className="px-2.5 py-2.5 text-center">
+                        <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider break-words ${style.badge}`}>
                           {issue.status}
                         </span>
                       </td>
 
-                      <td className="px-2.5 py-2.5 whitespace-nowrap text-slate-700 dark:text-slate-300 font-medium">
+                      <td className="px-2.5 py-2.5 text-center text-slate-700 dark:text-slate-300 font-medium">
                         {issue.sprint_name ? (
                           <span
-                            className={`inline-block max-w-[105px] truncate px-2 py-0.5 rounded text-[11px] font-semibold align-middle ${
+                            className={`inline-block px-2 py-0.5 rounded text-[11px] font-semibold align-middle break-words ${
                               isLight ? 'bg-blue-50 text-blue-700 border border-blue-200/80' : 'bg-blue-950/60 text-blue-300 border border-blue-800/60'
                             }`}
                             title={issue.sprint_name}
@@ -278,28 +278,18 @@ export const ListView: React.FC<ListViewProps> = ({
                         )}
                       </td>
 
-                      <td className="px-2.5 py-2.5 whitespace-nowrap text-right" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            type="button"
-                            onClick={() => onSelectIssue(issue)}
-                            className="text-[11px] font-semibold text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 cursor-pointer"
-                            title="Ver detalhes do chamado"
+                      <td className="px-2.5 py-2.5 whitespace-nowrap text-center" onClick={(e) => e.stopPropagation()}>
+                        {issueUrl && (
+                          <a
+                            href={issueUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center justify-center gap-0.5 text-[11px] font-semibold text-blue-600 hover:text-blue-700 hover:underline"
                           >
-                            Detalhes
-                          </button>
-                          {issueUrl && (
-                            <a
-                              href={issueUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="inline-flex items-center gap-0.5 text-[11px] font-semibold text-blue-600 hover:text-blue-700 hover:underline"
-                            >
-                              Jira
-                              <ExternalLink className="h-3 w-3" />
-                            </a>
-                          )}
-                        </div>
+                            Jira
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                        )}
                       </td>
                     </tr>
 
